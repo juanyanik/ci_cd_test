@@ -1,14 +1,11 @@
 name: snowflake-devops-demo
 
-# Controls when the action will run. 
 on:
   push:
     branches:
       - main
     paths:
       - 'migrations/**'
-
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 jobs:
@@ -16,7 +13,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Checkout repository
         uses: actions/checkout@v2
 
@@ -25,14 +21,22 @@ jobs:
         with:
           python-version: 3.8.x
 
-      # Extract the database name from SQL files in the migrations folder
       - name: Extract database name from SQL script
         id: extract-db
         run: |
-          # This assumes your SQL files have the format `USE DATABASE <DB_NAME>;`
-          DB_NAME=$(grep -i 'USE DATABASE' $GITHUB_WORKSPACE/migrations/*.sql | head -n 1 | awk '{print $3}' | sed 's/;//')
+          # Look for the first line with "USE DATABASE" and extract the database name
+          DB_NAME=$(grep -i 'USE DATABASE' $GITHUB_WORKSPACE/migrations/*.sql | head -n 1 | awk '{print $3}' | tr -d ';' | tr -d ' ')
+
           echo "Database found: $DB_NAME"
+          if [ -z "$DB_NAME" ]; then
+            echo "No database name found. Exiting."
+            exit 1
+          fi
           echo "::set-output name=database::$DB_NAME"
+
+      - name: Debugging: Check the extracted database name
+        run: |
+          echo "Extracted Database Name: ${{ steps.extract-db.outputs.database }}"
 
       - name: Run schemachange
         env:
@@ -49,4 +53,5 @@ jobs:
           pip install schemachange
           
           echo "Step 2: Running schemachange"
+          echo "Using database: $SF_DATABASE"  # Debug line
           schemachange -f $GITHUB_WORKSPACE/migrations -a $SF_ACCOUNT -u $SF_USERNAME -r $SF_ROLE -w $SF_WAREHOUSE -d $SF_DATABASE -c $SF_DATABASE.SCHEMACHANGE.CHANGE_HISTORY --create-change-history-table
