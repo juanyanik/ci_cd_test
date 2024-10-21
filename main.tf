@@ -7,7 +7,7 @@ terraform {
   }
 
   backend "remote" {
-    organization = "my-organization-name"
+    organization = "cicd-test"
 
     workspaces {
       name = "gh-actions-demo"
