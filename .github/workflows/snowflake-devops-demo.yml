@@ -10,11 +10,6 @@ on:
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
-    inputs:
-      database:
-        description: 'Snowflake Database to apply changes to'
-        required: true
-        default: 'MY_DEFAULT_DB'
 
 jobs:
   deploy-snowflake-changes-job:
@@ -30,6 +25,15 @@ jobs:
         with:
           python-version: 3.8.x
 
+      # Extract the database name from SQL files in the migrations folder
+      - name: Extract database name from SQL script
+        id: extract-db
+        run: |
+          # This assumes your SQL files have the format `USE DATABASE <DB_NAME>;`
+          DB_NAME=$(grep -i 'USE DATABASE' $GITHUB_WORKSPACE/migrations/*.sql | head -n 1 | awk '{print $3}' | sed 's/;//')
+          echo "Database found: $DB_NAME"
+          echo "::set-output name=database::$DB_NAME"
+
       - name: Run schemachange
         env:
           SF_ACCOUNT: ${{ secrets.SF_ACCOUNT }}
@@ -37,7 +41,7 @@ jobs:
           SF_ROLE: ${{ secrets.SF_ROLE }}
           SF_WAREHOUSE: ${{ secrets.SF_WAREHOUSE }}
           SNOWFLAKE_PASSWORD: ${{ secrets.SF_PASSWORD }}
-          SF_DATABASE: ${{ github.event.inputs.database }}  # Use the database input
+          SF_DATABASE: ${{ steps.extract-db.outputs.database }}  # Use the extracted database name
         run: |
           echo "GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
           python --version
