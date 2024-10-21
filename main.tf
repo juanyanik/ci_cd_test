@@ -10,7 +10,7 @@ terraform {
     organization = "cicd-test"
 
     workspaces {
-      name = "gh-actions-demo"
+      name = "gh-actions"
     }
   }
 }
