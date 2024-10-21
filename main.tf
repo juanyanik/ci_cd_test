@@ -29,23 +29,23 @@ resource "snowflake_schema" "demo_schema" {
   comment  = "Schema for Snowflake Terraform demo"
 }
 
-resource "snowflake_database" "dev_db" {
+resource "snowflake_database2" "dev_db" {
   name    = "DEV_DB"
   comment = "Database for Snowflake Terraform demo"
 }
 
-resource "snowflake_schema" "demo_schema" {
+resource "snowflake_schema2" "demo_schema" {
   database = snowflake_database.dev_db.name
   name     = "DEMO_SCHEMA"
   comment  = "Schema for Snowflake Terraform demo"
 }
 
-resource "snowflake_database" "prod_db" {
+resource "snowflake_database3" "prod_db" {
   name    = "PROD_DB"
   comment = "Database for Snowflake Terraform demo"
 }
 
-resource "snowflake_schema" "demo_schema" {
+resource "snowflake_schema3" "demo_schema" {
   database = snowflake_database.prod_db.name
   name     = "DEMO_SCHEMA"
   comment  = "Schema for Snowflake Terraform demo"
