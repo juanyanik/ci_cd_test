@@ -34,10 +34,6 @@ jobs:
           fi
           echo "::set-output name=database::$DB_NAME"
 
-      - name: Debugging: Check the extracted database name
-        run: |
-          echo "Extracted Database Name: ${{ steps.extract-db.outputs.database }}"
-
       - name: Run schemachange
         env:
           SF_ACCOUNT: ${{ secrets.SF_ACCOUNT }}
