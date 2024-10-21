@@ -1,5 +1,5 @@
 USE SCHEMA DEV_DB.DEMO_SCHEMA;
--- Create  table
+-- Create  table test
 CREATE OR REPLACE TABLE DEV_DB.DEMO_SCHEMA.TEST (
     id INT,
     name STRING,
