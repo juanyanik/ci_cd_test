@@ -10,7 +10,6 @@ CREATE OR REPLACE TABLE DEV_DB.DEMO_SCHEMA.TEST (
     salary DECIMAL(10, 2)
 );
 
--- Insert 1000 random rows into TEST
 INSERT INTO TEST (id, name, age, city, salary)
 WITH RECURSIVE t(n) AS (
     SELECT 1
